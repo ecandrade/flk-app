@@ -1,3 +1,13 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
+import os
 
-engine = create_engine("mysql+pymysql://vq5e8wkq2merroa1fnv0:pscale_pw_BUpGSDHvLooAVyF7HSGsZSt1ffL2l1Z2ipDWNS4jUNc@aws.connect.psdb.cloud/eduflaskapp?charset=utf8mb4")
+db_connection_string = os.environ['DB_CONNECTION_STRING']
+
+engine = create_engine(db_connection_string,
+                       connect_args={"ssl": {
+                         "ssl_ca": "/etc/ssl/cert.pem"
+                       }})
+
+with engine.connect() as conn:
+  result = conn.execute(text("select * from jobs"))
+  print(result.all())
